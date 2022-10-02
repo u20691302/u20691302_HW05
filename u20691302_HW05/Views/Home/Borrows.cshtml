@@ -1,0 +1,58 @@
+﻿@model IEnumerable<u20691302_HW05.Models.borrowsVM>
+
+@{
+    ViewBag.Title = "Borrows";
+}
+
+@{
+    int numBorrows = 0;
+    string bookName = "";
+}
+
+@foreach (var item in Model)
+{
+    numBorrows += 1;
+    bookName = item.book.name;
+}
+
+<h3>@bookName</h3>
+<hr/>
+<p>
+    <h4 style="float: left;"># Borrows - @numBorrows</h4>
+    @Html.ActionLink("View students", "Students", "Home", new { @class = "btn btn-primary", @style = "float: right;" })
+</p>
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(borrowsVM => borrowsVM.borrow.borrowId)
+        </th>
+        <th>
+            @Html.DisplayNameFor(borrowsVM => borrowsVM.borrow.takenDate)
+        </th>
+        <th>
+            @Html.DisplayNameFor(borrowsVM => borrowsVM.borrow.broughtDate)
+        </th>
+        <th>
+            @Html.DisplayName("Borrowed By")
+        </th>
+        <th></th>
+    </tr>
+
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.borrow.borrowId)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.borrow.takenDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.borrow.broughtDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.student.name) @Html.DisplayFor(modelItem => item.student.surname)
+            </td>
+        </tr>
+    }
+</table>
