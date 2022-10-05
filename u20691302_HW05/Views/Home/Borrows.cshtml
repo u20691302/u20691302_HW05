@@ -6,20 +6,24 @@
 
 @{
     int numBorrows = 0;
-    string bookName = "";
+    foreach (var item in Model)
+    {
+        numBorrows += 1;
+    }
 }
-
-@foreach (var item in Model)
+@if (ViewBag.Message1 == "Book out")
 {
-    numBorrows += 1;
-    bookName = item.book.name;
+    <h3>@ViewBag.Message - <span class="text-danger">Book Out</span></h3>
+}
+else
+{
+    <h3>@ViewBag.Message - <span class="text-success">Book Available</span></h3>
 }
 
-<h3>@bookName</h3>
-<hr/>
+<hr />
 <p>
     <h4 style="float: left;"># Borrows - @numBorrows</h4>
-    @Html.ActionLink("View students", "Students", "Home", new { @class = "btn btn-primary", @style = "float: right;" })
+    @Html.ActionLink("View students", "Students", "Home", new { bookStatus = ViewBag.Message1, bookId = ViewBag.Message2 }, new { @class = "btn btn-primary", @style = "float: right;" })
 </p>
 <table class="table">
     <tr>
@@ -48,7 +52,15 @@
                 @Html.DisplayFor(modelItem => item.borrow.takenDate)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.borrow.broughtDate)
+                @if (item.borrow.broughtDate.Equals(default(DateTime)))
+                {
+                    <span class="text-danger">Book Out</span>
+                }
+                else
+                {
+                    @Html.DisplayFor(modelItem => item.borrow.broughtDate)
+                }
+
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.student.name) @Html.DisplayFor(modelItem => item.student.surname)

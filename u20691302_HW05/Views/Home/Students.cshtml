@@ -1,4 +1,4 @@
-﻿@model IEnumerable<u20691302_HW05.Models.students>
+﻿@model IEnumerable<u20691302_HW05.Models.StudentsVM>
 
 @{
     ViewBag.Title = "Students";
@@ -16,7 +16,7 @@
             <td>
                 <select class="form-control" name="Class">
                     <option value="" ;>Select a Class</option>
-                    @foreach (var item in Model.Select(s => new {s.Class }).Distinct().OrderBy(s => s.Class).OrderBy(s => Convert.ToInt32(s.Class.Substring(0,s.Class.Length-1))))
+                    @foreach (var item in Model.Select(s => new { s.student.Class }).Distinct().OrderBy(s => s.Class).OrderBy(s => Convert.ToInt32(s.Class.Substring(0,s.Class.Length-1))))
                     {
                         <option value="@Html.DisplayFor(s => item.Class)">@Html.DisplayFor(s => item.Class)</option>
                     }
@@ -27,22 +27,23 @@
         </tr>
     </table>
 }
+
 <table class="table">
     <tr>
         <th>
-            @Html.DisplayNameFor(model => model.studentId)
+            @Html.DisplayNameFor(model => model.student.studentId)
         </th>
         <th>
-            @Html.DisplayNameFor(model => model.name)
+            @Html.DisplayNameFor(model => model.student.name)
         </th>
         <th>
-            @Html.DisplayNameFor(model => model.surname)
+            @Html.DisplayNameFor(model => model.student.surname)
         </th>
         <th>
-            @Html.DisplayNameFor(model => model.Class)
+            @Html.DisplayNameFor(model => model.student.Class)
         </th>
         <th>
-            @Html.DisplayNameFor(model => model.point)
+            @Html.DisplayNameFor(model => model.student.point)
         </th>
         <th></th>
     </tr>
@@ -51,22 +52,39 @@
     {
         <tr>
             <td>
-                @Html.DisplayFor(modelItem => item.studentId)
+                @Html.DisplayFor(modelItem => item.student.studentId)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.name)
+                @Html.DisplayFor(modelItem => item.student.name)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.surname)
+                @Html.DisplayFor(modelItem => item.student.surname)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Class)
+                @Html.DisplayFor(modelItem => item.student.Class)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.point)
+                @Html.DisplayFor(modelItem => item.student.point)
             </td>
             <td>
-                @Html.ActionLink("Borrow Book", "BorrowBook", "Home", new { studentId = item.studentId}, new { @class = "btn btn-primary" })
+                @{
+                    if (item.borrow.Select(bd => bd.borrow.broughtDate).Contains(default(DateTime)))
+                    {
+                        int borrowSId = item.borrow.Select(si => si.borrow.studentId).Distinct().FirstOrDefault();
+                        if (borrowSId == item.student.studentId)
+                        {
+                            @Html.ActionLink("Return Book", "ReturnBook", "Home", new { brDate = item.borrow.Select(br => br.borrow.takenDate).FirstOrDefault(), student = item.student.studentId, bookId = item.borrow.Select(br => br.borrow.bookId).FirstOrDefault() }, new { @class = "btn btn-danger" })
+                        }
+                        else
+                        {
+
+                        }
+                    }
+                    else
+                    {
+                        @Html.ActionLink("Borrow Book", "BorrowBook", "Home", new { student = item.student.studentId, bookId = item.borrow.Select(br => br.borrow.bookId).FirstOrDefault() }, new { @class = "btn btn-primary" })
+                    }
+                }
             </td>
         </tr>
     }

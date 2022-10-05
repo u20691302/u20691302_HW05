@@ -131,6 +131,7 @@
     <Compile Include="Data\DataService.cs" />
     <Compile Include="Models\borrowsVM.cs" />
     <Compile Include="Models\students.cs" />
+    <Compile Include="Models\StudentsVM.cs" />
     <Compile Include="Models\types.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

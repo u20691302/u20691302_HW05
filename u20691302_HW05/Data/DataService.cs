@@ -11,7 +11,7 @@ namespace u20691302_HW05.Data
     {
         //Connection string
         private string connectionString = "Data source=LAPTOP-E5ULLR78\\SQLEXPRESS;" +
-                                          "Initial Catalog=Library;Integrated Security=true";
+        "Initial Catalog=Library;Integrated Security=true";
 
 
 
@@ -29,7 +29,7 @@ namespace u20691302_HW05.Data
                 connection.Open();
                 SqlDataReader reader = command.ExecuteReader();
 
-                //Checks if the reader has rows then loops through the list and populates table
+                //Checks if the reader has rows then loops through
                 if (reader.HasRows)
                 {
                     while (reader.Read())
@@ -38,12 +38,12 @@ namespace u20691302_HW05.Data
                         int authorId = Convert.ToInt32(reader["authorId"]);
                         int typeId = Convert.ToInt32(reader["typeId"]);
 
-                        //Create a new book object and add it to the list to return.
                         booksVM books = new booksVM
                         {
                             book = getBooksById(bookId),
                             author = getAuthorById(authorId),
                             type = getTypeById(typeId),
+                            borrow = FetchAllBorrows(bookId)
                         };
                         returnList.Add(books);
                     }
@@ -51,7 +51,6 @@ namespace u20691302_HW05.Data
             }
             return returnList;
         }
-
         public books getBooksById(int bookId)
         {
             books books = null;
@@ -81,7 +80,6 @@ namespace u20691302_HW05.Data
             }
             return books;
         }
-
         public authors getAuthorById(int authorId)
         {
             authors authors = null;
@@ -108,7 +106,6 @@ namespace u20691302_HW05.Data
             }
             return authors;
         }
-
         public types getTypeById(int typeId)
         {
             types types = null;
@@ -137,9 +134,317 @@ namespace u20691302_HW05.Data
 
 
 
+        //Fetch and read database into books table by search queries
+        public List<booksVM> FetchBooksByName(string bookName)
+        {
+            List<booksVM> returnList = new List<booksVM>();
+
+            //Access database
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                string sqlQuery = "SELECT * FROM books WHERE name LIKE '%" + bookName + "%'";
+                SqlCommand command = new SqlCommand(sqlQuery, connection);
+
+                connection.Open();
+                SqlDataReader reader = command.ExecuteReader();
+
+                //Checks if the reader has rows then loops through
+                if (reader.HasRows)
+                {
+                    while (reader.Read())
+                    {
+                        int bookId = Convert.ToInt32(reader["bookId"]);
+                        int authorId = Convert.ToInt32(reader["authorId"]);
+                        int typeId = Convert.ToInt32(reader["typeId"]);
+
+                        booksVM books = new booksVM
+                        {
+                            book = getBooksById(bookId),
+                            author = getAuthorById(authorId),
+                            type = getTypeById(typeId),
+                            borrow = FetchAllBorrows(bookId)
+                        };
+                        returnList.Add(books);
+                    }
+                }
+            }
+            return returnList;
+        }
+        public List<booksVM> FetchBooksByType(string typeID)
+        {
+            List<booksVM> returnList = new List<booksVM>();
+
+            //Access database
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                string sqlQuery = "";
+                if (Convert.ToInt32(typeID) == 10)
+                {
+                    sqlQuery = "SELECT * FROM books WHERE typeId = " + typeID + " OR typeId = " + 12;
+                }
+                else if (Convert.ToInt32(typeID) == 12)
+                {
+                    sqlQuery = "SELECT * FROM books WHERE typeId = " + 10 + " OR typeId = " + typeID;
+                }
+                else
+                {
+                    sqlQuery = "SELECT * FROM books WHERE typeId = " + typeID;
+                }
+
+                SqlCommand command = new SqlCommand(sqlQuery, connection);
+
+                connection.Open();
+                SqlDataReader reader = command.ExecuteReader();
+
+                //Checks if the reader has rows then loops through
+                if (reader.HasRows)
+                {
+                    while (reader.Read())
+                    {
+                        int bookId = Convert.ToInt32(reader["bookId"]);
+                        int authorId = Convert.ToInt32(reader["authorId"]);
+                        int typeId = Convert.ToInt32(reader["typeId"]);
+
+                        booksVM books = new booksVM
+                        {
+                            book = getBooksById(bookId),
+                            author = getAuthorById(authorId),
+                            type = getTypeById(typeId),
+                            borrow = FetchAllBorrows(bookId)
+                        };
+                        returnList.Add(books);
+                    }
+                }
+            }
+            return returnList;
+        }
+        public List<booksVM> FetchBooksByAuthor(string authorID)
+        {
+            List<booksVM> returnList = new List<booksVM>();
+
+            //Access database
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                string sqlQuery = "SELECT * FROM books WHERE authorId = " + authorID;
+
+                SqlCommand command = new SqlCommand(sqlQuery, connection);
+
+                connection.Open();
+                SqlDataReader reader = command.ExecuteReader();
+
+                //Checks if the reader has rows then loops through
+                if (reader.HasRows)
+                {
+                    while (reader.Read())
+                    {
+                        int bookId = Convert.ToInt32(reader["bookId"]);
+                        int authorId = Convert.ToInt32(reader["authorId"]);
+                        int typeId = Convert.ToInt32(reader["typeId"]);
+
+                        booksVM books = new booksVM
+                        {
+                            book = getBooksById(bookId),
+                            author = getAuthorById(authorId),
+                            type = getTypeById(typeId),
+                            borrow = FetchAllBorrows(bookId)
+                        };
+                        returnList.Add(books);
+                    }
+                }
+            }
+            return returnList;
+        }
+        public List<booksVM> FetchBooksByNameAndType(string bookName, string typeID)
+        {
+            List<booksVM> returnList = new List<booksVM>();
+
+            //Access database
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                string sqlQuery = "";
+                if (Convert.ToInt32(typeID) == 10)
+                {
+                    sqlQuery = "SELECT * FROM books WHERE (typeId = " + typeID + " OR typeId = " + 12 +
+                        ") AND name LIKE '%" + bookName + "%'";
+                }
+                else if (Convert.ToInt32(typeID) == 12)
+                {
+                    sqlQuery = "SELECT * FROM books WHERE (typeId = " + 10 + " OR typeId = " + typeID +
+                        ") AND name LIKE '%" + bookName + "%'";
+                }
+                else
+                {
+                    sqlQuery = "SELECT * FROM books WHERE typeId = " + typeID + " AND name LIKE '%" + bookName + "%'";
+                }
+
+                SqlCommand command = new SqlCommand(sqlQuery, connection);
+
+                connection.Open();
+                SqlDataReader reader = command.ExecuteReader();
+
+                //Checks if the reader has rows then loops through
+                if (reader.HasRows)
+                {
+                    while (reader.Read())
+                    {
+                        int bookId = Convert.ToInt32(reader["bookId"]);
+                        int authorId = Convert.ToInt32(reader["authorId"]);
+                        int typeId = Convert.ToInt32(reader["typeId"]);
+
+                        booksVM books = new booksVM
+                        {
+                            book = getBooksById(bookId),
+                            author = getAuthorById(authorId),
+                            type = getTypeById(typeId),
+                            borrow = FetchAllBorrows(bookId)
+                        };
+                        returnList.Add(books);
+                    }
+                }
+            }
+            return returnList;
+        }
+        public List<booksVM> FetchBooksByNameAndAuthor(string bookName, string authorID)
+        {
+            List<booksVM> returnList = new List<booksVM>();
+
+            //Access database
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                string sqlQuery = "SELECT * FROM books WHERE name LIKE '%" + bookName + "%' AND authorId = " + authorID;
+                SqlCommand command = new SqlCommand(sqlQuery, connection);
+
+                connection.Open();
+                SqlDataReader reader = command.ExecuteReader();
+
+                //Checks if the reader has rows then loops through
+                if (reader.HasRows)
+                {
+                    while (reader.Read())
+                    {
+                        int bookId = Convert.ToInt32(reader["bookId"]);
+                        int authorId = Convert.ToInt32(reader["authorId"]);
+                        int typeId = Convert.ToInt32(reader["typeId"]);
+
+                        booksVM books = new booksVM
+                        {
+                            book = getBooksById(bookId),
+                            author = getAuthorById(authorId),
+                            type = getTypeById(typeId),
+                            borrow = FetchAllBorrows(bookId)
+                        };
+                        returnList.Add(books);
+                    }
+                }
+            }
+            return returnList;
+        }
+        public List<booksVM> FetchBooksByTypeAndAuthor(string typeID, string authorID)
+        {
+            List<booksVM> returnList = new List<booksVM>();
+
+            //Access database
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                string sqlQuery = "";
+                if (Convert.ToInt32(typeID) == 10)
+                {
+                    sqlQuery = "SELECT * FROM books WHERE (typeId = " + typeID + " OR typeId = " + 12 +
+                        ") AND authorId = " + authorID;
+                }
+                else if (Convert.ToInt32(typeID) == 12)
+                {
+                    sqlQuery = "SELECT * FROM books WHERE (typeId = " + 10 + " OR typeId = " + typeID +
+                        ") AND authorId = " + authorID;
+                }
+                else
+                {
+                    sqlQuery = "SELECT * FROM books WHERE typeId = " + typeID + " AND authorId = " + authorID;
+                }
+
+                SqlCommand command = new SqlCommand(sqlQuery, connection);
+
+                connection.Open();
+                SqlDataReader reader = command.ExecuteReader();
+
+                //Checks if the reader has rows then loops through
+                if (reader.HasRows)
+                {
+                    while (reader.Read())
+                    {
+                        int bookId = Convert.ToInt32(reader["bookId"]);
+                        int authorId = Convert.ToInt32(reader["authorId"]);
+                        int typeId = Convert.ToInt32(reader["typeId"]);
+
+                        booksVM books = new booksVM
+                        {
+                            book = getBooksById(bookId),
+                            author = getAuthorById(authorId),
+                            type = getTypeById(typeId),
+                            borrow = FetchAllBorrows(bookId)
+                        };
+                        returnList.Add(books);
+                    }
+                }
+            }
+            return returnList;
+        }
+        public List<booksVM> FetchBooksByAll(string bookName, string typeID, string authorID)
+        {
+            List<booksVM> returnList = new List<booksVM>();
+
+            //Access database
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                string sqlQuery = "";
+                if (Convert.ToInt32(typeID) == 10)
+                {
+                    sqlQuery = "SELECT * FROM books WHERE name LIKE '%" + bookName + "%' AND (typeId = " +
+                        typeID + " OR typeId = " + 12 + ") AND authorId = " + authorID;
+                }
+                else if (Convert.ToInt32(typeID) == 12)
+                {
+                    sqlQuery = "SELECT * FROM books WHERE name LIKE '%" + bookName + "%' AND (typeId = " +
+                        10 + " OR typeId = " + typeID + ") AND authorId = " + authorID;
+                }
+                else
+                {
+                    sqlQuery = "SELECT * FROM books WHERE name LIKE '%" + bookName + "%' AND typeId = " +
+                        typeID + " AND authorId = " + authorID;
+                }
+
+                SqlCommand command = new SqlCommand(sqlQuery, connection);
+
+                connection.Open();
+                SqlDataReader reader = command.ExecuteReader();
+
+                //Checks if the reader has rows then loops through
+                if (reader.HasRows)
+                {
+                    while (reader.Read())
+                    {
+                        int bookId = Convert.ToInt32(reader["bookId"]);
+                        int authorId = Convert.ToInt32(reader["authorId"]);
+                        int typeId = Convert.ToInt32(reader["typeId"]);
+
+                        booksVM books = new booksVM
+                        {
+                            book = getBooksById(bookId),
+                            author = getAuthorById(authorId),
+                            type = getTypeById(typeId),
+                            borrow = FetchAllBorrows(bookId)
+                        };
+                        returnList.Add(books);
+                    }
+                }
+                return returnList;
+            }
+        }
+
+
 
         //Fetch and read database into borrows table
-        public List<borrowsVM> FetchAllBorrows(string bookID)
+        public List<borrowsVM> FetchAllBorrows(int bookID)
         {
             List<borrowsVM> returnList = new List<borrowsVM>();
 
@@ -152,7 +457,7 @@ namespace u20691302_HW05.Data
                 connection.Open();
                 SqlDataReader reader = command.ExecuteReader();
 
-                //Checks if the reader has rows then loops through the list and populates table
+                //Checks if the reader has rows then loops through
                 if (reader.HasRows)
                 {
                     while (reader.Read())
@@ -160,7 +465,6 @@ namespace u20691302_HW05.Data
                         int borrowId = Convert.ToInt32(reader["borrowId"]);
                         int studentId = Convert.ToInt32(reader["studentId"]);
 
-                        //Create a new book object and add it to the list to return.
                         borrowsVM books = new borrowsVM
                         {
                             book = getBooksById(Convert.ToInt32(bookID)),
@@ -173,7 +477,6 @@ namespace u20691302_HW05.Data
             }
             return returnList;
         }
-
         public borrows getBorrowsById(int borrowId)
         {
             borrows borrows = null;
@@ -185,24 +488,36 @@ namespace u20691302_HW05.Data
                 connection.Open();
                 SqlDataReader reader = command.ExecuteReader();
 
+                object returnVal = null;
+                object broughtDateCheck = null;
+
                 if (reader.HasRows)
                 {
                     while (reader.Read())
                     {
+                        broughtDateCheck = reader["broughtDate"];
+                        if (broughtDateCheck == DBNull.Value)
+                        {
+                            returnVal = null;
+                        }
+                        else
+                        {
+                            returnVal = broughtDateCheck;
+                        }
                         borrows = new borrows
                         {
+                            
                             borrowId = Convert.ToInt32(reader["borrowId"]),
                             takenDate = Convert.ToDateTime(reader["takenDate"]),
-                            broughtDate = Convert.ToDateTime(reader["broughtDate"]),
+                            broughtDate = Convert.ToDateTime(returnVal),
                             studentId = Convert.ToInt32(reader["studentId"]),
-                            bookId = Convert.ToInt32(reader["bookId"]),
+                            bookId = Convert.ToInt32(reader["bookId"])
                         };
                     }
                 }
             }
             return borrows;
         }
-
         public students getStudentsById(int studentId)
         {
             students students = null;
@@ -237,501 +552,239 @@ namespace u20691302_HW05.Data
 
 
         //Fetch and read database into students table
-        public List<students> FetchAllStudents()
+        public List<StudentsVM> FetchAllStudents()
         {
-            List<students> returnList = new List<students>();
-
-            //access database
-            using (SqlConnection connection = new SqlConnection(connectionString))
-            {
-                string sqlQuery = "SELECT * FROM students";
-                SqlCommand command = new SqlCommand(sqlQuery, connection);
-
-                connection.Open();
-                SqlDataReader reader = command.ExecuteReader();
-
-                //Checks if the reader has rows then we can loop through the list and populate table
-                if (reader.HasRows)
-                {
-                    while (reader.Read())
-                    {
-                        //create new marine animal object and add it to the list to return.
-                        students students = new students();
-
-                        students.studentId = Convert.ToInt32(reader["studentId"]);
-                        students.name = Convert.ToString(reader["name"]);
-                        students.surname = Convert.ToString(reader["surname"]);
-                        students.birthdate = Convert.ToDateTime(reader["birthdate"]);
-                        students.gender = Convert.ToString(reader["gender"]);
-                        students.Class = Convert.ToString(reader["class"]);
-                        students.point = Convert.ToInt32(reader["point"]);
-
-                        returnList.Add(students);
-                    }
-                }
-            }
-            return returnList;
-        }
-
-
-
-
-        //Fetch and read database into books table by search query
-        public List<booksVM> FetchBooksByName(string bookName)
-        {
-            List<booksVM> returnList = new List<booksVM>();
+            List<StudentsVM> returnList = new List<StudentsVM>();
 
             //Access database
-            using (SqlConnection connection = new SqlConnection(connectionString))
-            {
-                string sqlQuery = "SELECT * FROM books WHERE name LIKE '%" + bookName + "%'";
-                SqlCommand command = new SqlCommand(sqlQuery, connection);
+            SqlConnection connection1 = new SqlConnection(connectionString);
+            SqlConnection connection2 = new SqlConnection(connectionString);
+            
+                string sqlQuery1 = "SELECT * FROM students";
+                string sqlQuery2 = "SELECT * FROM books";
 
-                connection.Open();
-                SqlDataReader reader = command.ExecuteReader();
+                SqlCommand command1 = new SqlCommand(sqlQuery1, connection1);
+                SqlCommand command2 = new SqlCommand(sqlQuery2, connection2);
 
-                //Checks if the reader has rows then loops through the list and populates table
-                if (reader.HasRows)
+                connection1.Open();
+                SqlDataReader reader1 = command1.ExecuteReader();
+      
+                connection2.Open();
+                SqlDataReader reader2 = command2.ExecuteReader();
+
+                //Checks if the reader has rows then loops through
+                if (reader1.HasRows && reader2.HasRows)
                 {
-                    while (reader.Read())
+                    while (reader1.Read() && reader2.Read())
                     {
-                        int bookId = Convert.ToInt32(reader["bookId"]);
-                        int authorId = Convert.ToInt32(reader["authorId"]);
-                        int typeId = Convert.ToInt32(reader["typeId"]);
+                        int studentId = Convert.ToInt32(reader1["studentId"]);
+                        int bookId = Convert.ToInt32(reader2["bookId"]);
 
-                        //Create a new book object and add it to the list to return.
-                        booksVM books = new booksVM
+                        StudentsVM books = new StudentsVM
                         {
-                            book = getBooksById(bookId),
-                            author = getAuthorById(authorId),
-                            type = getTypeById(typeId)
+                            student = getStudentsById(studentId),
+                            borrow = FetchAllBorrows(bookId)
                         };
                         returnList.Add(books);
                     }
                 }
-            }
             return returnList;
         }
 
-        public List<booksVM> FetchBooksByType(string typeID)
+
+
+        //Fetch and read database into students table by search queries
+        public List<StudentsVM> FetchStudentsByName(string studentName)
         {
-            List<booksVM> returnList = new List<booksVM>();
+            List<StudentsVM> returnList = new List<StudentsVM>();
 
             //Access database
-            using (SqlConnection connection = new SqlConnection(connectionString))
+            SqlConnection connection1 = new SqlConnection(connectionString);
+            SqlConnection connection2 = new SqlConnection(connectionString);
+
+            string sqlQuery1 = "SELECT * FROM students WHERE name LIKE '%" + studentName + "%'";
+            string sqlQuery2 = "SELECT * FROM books";
+
+            SqlCommand command1 = new SqlCommand(sqlQuery1, connection1);
+            SqlCommand command2 = new SqlCommand(sqlQuery2, connection2);
+
+            connection1.Open();
+            SqlDataReader reader1 = command1.ExecuteReader();
+
+            connection2.Open();
+            SqlDataReader reader2 = command2.ExecuteReader();
+
+            //Checks if the reader has rows then loops through
+            if (reader1.HasRows && reader2.HasRows)
             {
-                string sqlQuery = "";
-                if (Convert.ToInt32(typeID) == 10)
+                while (reader1.Read() && reader2.Read())
                 {
-                    sqlQuery = "SELECT * FROM books WHERE typeId = " + typeID + " OR typeId = " + 12;
-                }
-                else if (Convert.ToInt32(typeID) == 12)
-                {
-                    sqlQuery = "SELECT * FROM books WHERE typeId = " + 10 + " OR typeId = " + typeID;
-                }
-                else
-                {
-                    sqlQuery = "SELECT * FROM books WHERE typeId = " + typeID;
-                }
+                    int studentId = Convert.ToInt32(reader1["studentId"]);
+                    int bookId = Convert.ToInt32(reader2["bookId"]);
 
-                SqlCommand command = new SqlCommand(sqlQuery, connection);
-
-                connection.Open();
-                SqlDataReader reader = command.ExecuteReader();
-
-                //Checks if the reader has rows then loops through the list and populates table
-                if (reader.HasRows)
-                {
-                    while (reader.Read())
+                    StudentsVM books = new StudentsVM
                     {
-                        int bookId = Convert.ToInt32(reader["bookId"]);
-                        int authorId = Convert.ToInt32(reader["authorId"]);
-                        int typeId = Convert.ToInt32(reader["typeId"]);
-
-                        //Create a new book object and add it to the list to return.
-                        booksVM books = new booksVM
-                        {
-                            book = getBooksById(bookId),
-                            author = getAuthorById(authorId),
-                            type = getTypeById(typeId)
-                        };
-                        returnList.Add(books);
-                    }
+                        student = getStudentsById(studentId),
+                        borrow = FetchAllBorrows(bookId)
+                    };
+                    returnList.Add(books);
                 }
             }
             return returnList;
-        }
 
-        public List<booksVM> FetchBooksByAuthor(string authorID)
+            //List<StudentsVM> returnList = new List<StudentsVM>();
+
+            ////Access database
+            //using (SqlConnection connection = new SqlConnection(connectionString))
+            //{
+            //    string sqlQuery = "SELECT * FROM students WHERE name LIKE '%" + studentName + "%'";
+            //    SqlCommand command = new SqlCommand(sqlQuery, connection);
+
+            //    connection.Open();
+            //    SqlDataReader reader = command.ExecuteReader();
+
+            //    //Checks if the reader has rows then we can loop through the list and populate table
+            //    if (reader.HasRows)
+            //    {
+            //        while (reader.Read())
+            //        {
+            //            //create new student object and add it to the list to return.
+            //            StudentsVM students = new StudentsVM();
+
+            //            students.studentId = Convert.ToInt32(reader["studentId"]);
+            //            students.name = Convert.ToString(reader["name"]);
+            //            students.surname = Convert.ToString(reader["surname"]);
+            //            students.birthdate = Convert.ToDateTime(reader["birthdate"]);
+            //            students.gender = Convert.ToString(reader["gender"]);
+            //            students.Class = Convert.ToString(reader["class"]);
+            //            students.point = Convert.ToInt32(reader["point"]);
+
+            //            returnList.Add(students);
+            //        }
+            //    }
+            //}
+            //return returnList;
+
+        }
+        public List<StudentsVM> FetchStudentsByClass(string Class)
         {
-            List<booksVM> returnList = new List<booksVM>();
+            List<StudentsVM> returnList = new List<StudentsVM>();
 
             //Access database
-            using (SqlConnection connection = new SqlConnection(connectionString))
+            SqlConnection connection1 = new SqlConnection(connectionString);
+            SqlConnection connection2 = new SqlConnection(connectionString);
+
+            string sqlQuery1 = "SELECT * FROM students WHERE class = '" + Class + "'";
+            string sqlQuery2 = "SELECT * FROM books";
+
+            SqlCommand command1 = new SqlCommand(sqlQuery1, connection1);
+            SqlCommand command2 = new SqlCommand(sqlQuery2, connection2);
+
+            connection1.Open();
+            SqlDataReader reader1 = command1.ExecuteReader();
+
+            connection2.Open();
+            SqlDataReader reader2 = command2.ExecuteReader();
+
+            //Checks if the reader has rows then loops through
+            if (reader1.HasRows && reader2.HasRows)
             {
-                string sqlQuery = "SELECT * FROM books WHERE authorId = " + authorID;
-
-                SqlCommand command = new SqlCommand(sqlQuery, connection);
-
-                connection.Open();
-                SqlDataReader reader = command.ExecuteReader();
-
-                //Checks if the reader has rows then loops through the list and populates table
-                if (reader.HasRows)
+                while (reader1.Read() && reader2.Read())
                 {
-                    while (reader.Read())
+                    int studentId = Convert.ToInt32(reader1["studentId"]);
+                    int bookId = Convert.ToInt32(reader2["bookId"]);
+
+                    StudentsVM books = new StudentsVM
                     {
-                        int bookId = Convert.ToInt32(reader["bookId"]);
-                        int authorId = Convert.ToInt32(reader["authorId"]);
-                        int typeId = Convert.ToInt32(reader["typeId"]);
-
-                        //Create a new book object and add it to the list to return.
-                        booksVM books = new booksVM
-                        {
-                            book = getBooksById(bookId),
-                            author = getAuthorById(authorId),
-                            type = getTypeById(typeId)
-                        };
-                        returnList.Add(books);
-                    }
-                }
-            }
-            return returnList;
-        }
-
-        public List<booksVM> FetchBooksByBookAndType(string bookName, string typeID)
-        {
-            List<booksVM> returnList = new List<booksVM>();
-
-            //Access database
-            using (SqlConnection connection = new SqlConnection(connectionString))
-            {
-                string sqlQuery = "";
-                if (Convert.ToInt32(typeID) == 10)
-                {
-                    sqlQuery = "SELECT * FROM books WHERE (typeId = " + typeID + " OR typeId = " + 12 +
-                        ") AND name LIKE '%" + bookName + "%'";
-                }
-                else if (Convert.ToInt32(typeID) == 12)
-                {
-                    sqlQuery = "SELECT * FROM books WHERE (typeId = " + 10 + " OR typeId = " + typeID +
-                        ") AND name LIKE '%" + bookName + "%'";
-                }
-                else
-                {
-                    sqlQuery = "SELECT * FROM books WHERE typeId = " + typeID + " AND name LIKE '%" + bookName + "%'";
-                }
-
-                SqlCommand command = new SqlCommand(sqlQuery, connection);
-
-                connection.Open();
-                SqlDataReader reader = command.ExecuteReader();
-
-                //Checks if the reader has rows then loops through the list and populates table
-                if (reader.HasRows)
-                {
-                    while (reader.Read())
-                    {
-                        int bookId = Convert.ToInt32(reader["bookId"]);
-                        int authorId = Convert.ToInt32(reader["authorId"]);
-                        int typeId = Convert.ToInt32(reader["typeId"]);
-
-                        //Create a new book object and add it to the list to return.
-                        booksVM books = new booksVM
-                        {
-                            book = getBooksById(bookId),
-                            author = getAuthorById(authorId),
-                            type = getTypeById(typeId)
-                        };
-                        returnList.Add(books);
-                    }
+                        student = getStudentsById(studentId),
+                        borrow = FetchAllBorrows(bookId)
+                    };
+                    returnList.Add(books);
                 }
             }
             return returnList;
         }
-
-        public List<booksVM> FetchBooksByBookAndAuthor(string bookName, string authorID)
+        public List<StudentsVM> FetchStudentsByAll(string studentName, string Class)
         {
-            List<booksVM> returnList = new List<booksVM>();
+            List<StudentsVM> returnList = new List<StudentsVM>();
 
             //Access database
-            using (SqlConnection connection = new SqlConnection(connectionString))
+            SqlConnection connection1 = new SqlConnection(connectionString);
+            SqlConnection connection2 = new SqlConnection(connectionString);
+
+            string sqlQuery1 = "SELECT * FROM students WHERE name LIKE '%" + studentName + "%' AND class = '" + Class + "'";
+            string sqlQuery2 = "SELECT * FROM books";
+
+            SqlCommand command1 = new SqlCommand(sqlQuery1, connection1);
+            SqlCommand command2 = new SqlCommand(sqlQuery2, connection2);
+
+            connection1.Open();
+            SqlDataReader reader1 = command1.ExecuteReader();
+
+            connection2.Open();
+            SqlDataReader reader2 = command2.ExecuteReader();
+
+            //Checks if the reader has rows then loops through
+            if (reader1.HasRows && reader2.HasRows)
             {
-                string sqlQuery = "SELECT * FROM books WHERE name LIKE '%" + bookName + "%' AND authorId = " + authorID;
-                SqlCommand command = new SqlCommand(sqlQuery, connection);
-
-                connection.Open();
-                SqlDataReader reader = command.ExecuteReader();
-
-                //Checks if the reader has rows then loops through the list and populates table
-                if (reader.HasRows)
+                while (reader1.Read() && reader2.Read())
                 {
-                    while (reader.Read())
+                    int studentId = Convert.ToInt32(reader1["studentId"]);
+                    int bookId = Convert.ToInt32(reader2["bookId"]);
+
+                    StudentsVM books = new StudentsVM
                     {
-                        int bookId = Convert.ToInt32(reader["bookId"]);
-                        int authorId = Convert.ToInt32(reader["authorId"]);
-                        int typeId = Convert.ToInt32(reader["typeId"]);
-
-                        //Create a new book object and add it to the list to return.
-                        booksVM books = new booksVM
-                        {
-                            book = getBooksById(bookId),
-                            author = getAuthorById(authorId),
-                            type = getTypeById(typeId)
-                        };
-                        returnList.Add(books);
-                    }
-                }
-            }
-            return returnList;
-        }
-
-        public List<booksVM> FetchBooksByTypeAndAuthor(string typeID, string authorID)
-        {
-            List<booksVM> returnList = new List<booksVM>();
-
-            //Access database
-            using (SqlConnection connection = new SqlConnection(connectionString))
-            {
-                string sqlQuery = "";
-                if (Convert.ToInt32(typeID) == 10)
-                {
-                    sqlQuery = "SELECT * FROM books WHERE (typeId = " + typeID + " OR typeId = " + 12 +
-                        ") AND authorId = " + authorID;
-                }
-                else if (Convert.ToInt32(typeID) == 12)
-                {
-                    sqlQuery = "SELECT * FROM books WHERE (typeId = " + 10 + " OR typeId = " + typeID +
-                        ") AND authorId = " + authorID;
-                }
-                else
-                {
-                    sqlQuery = "SELECT * FROM books WHERE typeId = " + typeID + " AND authorId = " + authorID;
-                }
-
-                SqlCommand command = new SqlCommand(sqlQuery, connection);
-
-                connection.Open();
-                SqlDataReader reader = command.ExecuteReader();
-
-                //Checks if the reader has rows then loops through the list and populates table
-                if (reader.HasRows)
-                {
-                    while (reader.Read())
-                    {
-                        int bookId = Convert.ToInt32(reader["bookId"]);
-                        int authorId = Convert.ToInt32(reader["authorId"]);
-                        int typeId = Convert.ToInt32(reader["typeId"]);
-
-                        //Create a new book object and add it to the list to return.
-                        booksVM books = new booksVM
-                        {
-                            book = getBooksById(bookId),
-                            author = getAuthorById(authorId),
-                            type = getTypeById(typeId)
-                        };
-                        returnList.Add(books);
-                    }
-                }
-            }
-            return returnList;
-        }
-
-        public List<booksVM> FetchBooksByAll(string bookName, string typeID, string authorID)
-        {
-            List<booksVM> returnList = new List<booksVM>();
-
-            //Access database
-            using (SqlConnection connection = new SqlConnection(connectionString))
-            {
-                string sqlQuery = "";
-                if (Convert.ToInt32(typeID) == 10)
-                {
-                    sqlQuery = "SELECT * FROM books WHERE name LIKE '%" + bookName + "%' AND (typeId = " +
-                        typeID + " OR typeId = " + 12 + ") AND authorId = " + authorID;
-                }
-                else if (Convert.ToInt32(typeID) == 12)
-                {
-                    sqlQuery = "SELECT * FROM books WHERE name LIKE '%" + bookName + "%' AND (typeId = " +
-                        10 + " OR typeId = " + typeID + ") AND authorId = " + authorID;
-                }
-                else
-                {
-                    sqlQuery = "SELECT * FROM books WHERE name LIKE '%" + bookName + "%' AND typeId = " +
-                        typeID + " AND authorId = " + authorID;
-                }
-
-                SqlCommand command = new SqlCommand(sqlQuery, connection);
-
-                connection.Open();
-                SqlDataReader reader = command.ExecuteReader();
-
-                //Checks if the reader has rows then loops through the list and populates table
-                if (reader.HasRows)
-                {
-                    while (reader.Read())
-                    {
-                        int bookId = Convert.ToInt32(reader["bookId"]);
-                        int authorId = Convert.ToInt32(reader["authorId"]);
-                        int typeId = Convert.ToInt32(reader["typeId"]);
-
-                        //Create a new book object and add it to the list to return.
-                        booksVM books = new booksVM
-                        {
-                            book = getBooksById(bookId),
-                            author = getAuthorById(authorId),
-                            type = getTypeById(typeId)
-                        };
-                        returnList.Add(books);
-                    }
-                }
-                return returnList;
-            }
-        }
-
-
-        //Fetch and read database into students table by search query
-        public List<students> FetchStudentsByName(string studentName)
-        {
-            List<students> returnList = new List<students>();
-
-            //Access database
-            using (SqlConnection connection = new SqlConnection(connectionString))
-            {
-                string sqlQuery = "SELECT * FROM students WHERE name LIKE '%" + studentName + "%'";
-                SqlCommand command = new SqlCommand(sqlQuery, connection);
-
-                connection.Open();
-                SqlDataReader reader = command.ExecuteReader();
-
-                //Checks if the reader has rows then we can loop through the list and populate table
-                if (reader.HasRows)
-                {
-                    while (reader.Read())
-                    {
-                        //create new student object and add it to the list to return.
-                        students students = new students();
-
-                        students.studentId = Convert.ToInt32(reader["studentId"]);
-                        students.name = Convert.ToString(reader["name"]);
-                        students.surname = Convert.ToString(reader["surname"]);
-                        students.birthdate = Convert.ToDateTime(reader["birthdate"]);
-                        students.gender = Convert.ToString(reader["gender"]);
-                        students.Class = Convert.ToString(reader["class"]);
-                        students.point = Convert.ToInt32(reader["point"]);
-
-                        returnList.Add(students);
-                    }
-                }
-            }
-            return returnList;
-        }
-
-        public List<students> FetchStudentsByClass(string Class)
-        {
-            List<students> returnList = new List<students>();
-
-            //Access database
-            using (SqlConnection connection = new SqlConnection(connectionString))
-            {
-                string sqlQuery = "SELECT * FROM students WHERE class = '" + Class + "'";
-                SqlCommand command = new SqlCommand(sqlQuery, connection);
-
-                connection.Open();
-                SqlDataReader reader = command.ExecuteReader();
-
-                //Checks if the reader has rows then we can loop through the list and populate table
-                if (reader.HasRows)
-                {
-                    while (reader.Read())
-                    {
-                        //create new student object and add it to the list to return.
-                        students students = new students();
-
-                        students.studentId = Convert.ToInt32(reader["studentId"]);
-                        students.name = Convert.ToString(reader["name"]);
-                        students.surname = Convert.ToString(reader["surname"]);
-                        students.birthdate = Convert.ToDateTime(reader["birthdate"]);
-                        students.gender = Convert.ToString(reader["gender"]);
-                        students.Class = Convert.ToString(reader["class"]);
-                        students.point = Convert.ToInt32(reader["point"]);
-
-                        returnList.Add(students);
-                    }
-                }
-            }
-            return returnList;
-        }
-
-        public List<students> FetchStudentsByAll(string studentName, string Class)
-        {
-            List<students> returnList = new List<students>();
-
-            //Access database
-            using (SqlConnection connection = new SqlConnection(connectionString))
-            {
-                string sqlQuery = "SELECT * FROM students WHERE name LIKE '%" + studentName + "%' AND class = '" + Class + "'";
-                SqlCommand command = new SqlCommand(sqlQuery, connection);
-
-                connection.Open();
-                SqlDataReader reader = command.ExecuteReader();
-
-                //Checks if the reader has rows then we can loop through the list and populate table
-                if (reader.HasRows)
-                {
-                    while (reader.Read())
-                    {
-                        //create new student object and add it to the list to return.
-                        students students = new students();
-
-                        students.studentId = Convert.ToInt32(reader["studentId"]);
-                        students.name = Convert.ToString(reader["name"]);
-                        students.surname = Convert.ToString(reader["surname"]);
-                        students.birthdate = Convert.ToDateTime(reader["birthdate"]);
-                        students.gender = Convert.ToString(reader["gender"]);
-                        students.Class = Convert.ToString(reader["class"]);
-                        students.point = Convert.ToInt32(reader["point"]);
-
-                        returnList.Add(students);
-                    }
+                        student = getStudentsById(studentId),
+                        borrow = FetchAllBorrows(bookId)
+                    };
+                    returnList.Add(books);
                 }
             }
             return returnList;
         }
 
 
-
+        
         //Method to insert new borrow
+        public void BorrowBook(int bookID, int studentID)
+        {
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
 
-        //public void BorrowBook(string bookID, string studentID)
-        //{
-        //    using (SqlConnection connection = new SqlConnection(connectionString))
-        //    {
-        //        string sqlQuery = "INSERT INTO borrows (studentId, bookId, takenDate, broughtDate) VALUES ( " +
-        //            studentID + ", "  + bookID + ", CAST(N'" + DateTime.Now + "' AS DateTime), CAST(N'" + DBNull.Value + "' AS DateTime))";
+                string sqlQuery = "INSERT INTO dbo.borrows Values(@studentId, @bookId, @takenDate, @broughtDate)";
 
-        //        SqlCommand command = new SqlCommand(sqlQuery, connection);
+                SqlCommand command = new SqlCommand(sqlQuery, connection);
 
-        //        connection.Open();
-        //        command.ExecuteNonQuery();
-        //    }
-        //}
+                command.Parameters.Add("@studentId", System.Data.SqlDbType.Int, 50).Value = studentID;
+                command.Parameters.Add("@bookId", System.Data.SqlDbType.Int, 50).Value = bookID;
+                command.Parameters.Add("@takenDate", System.Data.SqlDbType.DateTime, 50).Value = DateTime.Now;
+                command.Parameters.Add("@broughtDate", System.Data.SqlDbType.DateTime, 50).Value = DBNull.Value;
+
+                connection.Open();
+                command.ExecuteNonQuery();
+            }
+        }
 
 
 
         //Method to return  borrow
+        public void ReturnBook(int bookID, int studentID,  DateTime brDate)
+        {
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
 
-        //public void ReturnBook(int bookID, int studentID)
-        //{
-        //    using (SqlConnection connection = new SqlConnection(connectionString))
-        //    {
-        //        string sqlQuery = "";
+                string sqlQuery = "UPDATE dbo.borrows SET studentId = @studentId, bookId = @bookId, takenDate = @takenDate, broughtDate = @broughtDate WHERE studentId = @studentId";
 
-        //        SqlCommand command = new SqlCommand(sqlQuery, connection);
+                SqlCommand command = new SqlCommand(sqlQuery, connection);
 
-        //        connection.Open();
-        //        command.ExecuteNonQuery();
-        //    }
-        //}
+                command.Parameters.Add("@studentId", System.Data.SqlDbType.Int, 50).Value = studentID;
+                command.Parameters.Add("@bookId", System.Data.SqlDbType.Int, 50).Value = bookID;
+                command.Parameters.Add("@takenDate", System.Data.SqlDbType.DateTime, 50).Value = brDate;
+                command.Parameters.Add("@broughtDate", System.Data.SqlDbType.DateTime, 50).Value = DateTime.Now;
+
+                connection.Open();
+                command.ExecuteNonQuery();
+            }
+        }
     }
 }

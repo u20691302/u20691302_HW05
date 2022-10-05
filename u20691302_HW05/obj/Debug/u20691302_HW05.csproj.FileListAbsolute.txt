@@ -72,7 +72,6 @@ C:\Users\camer\OneDrive\Informatics\INF272\Homework Assignments\HW5\u20691302_HW
 C:\Users\camer\OneDrive\Informatics\INF272\Homework Assignments\HW5\u20691302_HW05\u20691302_HW05\bin\Newtonsoft.Json.xml
 C:\Users\camer\OneDrive\Informatics\INF272\Homework Assignments\HW5\u20691302_HW05\u20691302_HW05\bin\Antlr3.Runtime.pdb
 C:\Users\camer\OneDrive\Informatics\INF272\Homework Assignments\HW5\u20691302_HW05\u20691302_HW05\bin\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.xml
-C:\Users\camer\OneDrive\Informatics\INF272\Homework Assignments\HW5\u20691302_HW05\u20691302_HW05\obj\Debug\u20691302_HW05.csproj.AssemblyReference.cache
 C:\Users\camer\OneDrive\Informatics\INF272\Homework Assignments\HW5\u20691302_HW05\u20691302_HW05\obj\Debug\u20691302_HW05.csproj.CoreCompileInputs.cache
 C:\Users\camer\OneDrive\Informatics\INF272\Homework Assignments\HW5\u20691302_HW05\u20691302_HW05\obj\Debug\u20691302_HW05.csproj.CopyComplete
 C:\Users\camer\OneDrive\Informatics\INF272\Homework Assignments\HW5\u20691302_HW05\u20691302_HW05\obj\Debug\u20691302_HW05.dll

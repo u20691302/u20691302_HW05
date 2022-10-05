@@ -10,8 +10,6 @@ namespace u20691302_HW05.Controllers
 {
     public class HomeController : Controller
     {
-        string studentID = "", bookID = "";
-
         public ActionResult Home()
         {
             ViewBag.Message = "Your application description page.";
@@ -33,27 +31,39 @@ namespace u20691302_HW05.Controllers
             return View(books);
         }
 
+
+
+
         //Send database table to borrow view
-        public ActionResult Borrows(string bookId)
+        public ActionResult Borrows(int bookId, string bookName, string status)
         {
             List<borrowsVM> borrows = new List<borrowsVM>();
 
             DataService dataService = new DataService();
 
             borrows = dataService.FetchAllBorrows(bookId);
-            bookID = bookId;
+
+            ViewBag.Message = bookName;
+            ViewBag.Message1 = status;
+            ViewBag.Message2 = bookId;
+
 
             return View(borrows);
         }
 
+
+
+
         //Send database table to student view
-        public ActionResult Students()
+        public ActionResult Students(string bookStatus)
         {
-            List<students> students = new List<students>();
+            List<StudentsVM> students = new List<StudentsVM>();
 
             DataService dataService = new DataService();
 
             students = dataService.FetchAllStudents();
+
+            ViewBag.Message = bookStatus;
 
             return View(students);
         }
@@ -81,11 +91,11 @@ namespace u20691302_HW05.Controllers
             }
             else if (bookName != "" && typeId != "" && authorId == "")
             {
-                books = dataService.FetchBooksByBookAndType(bookName, typeId);
+                books = dataService.FetchBooksByNameAndType(bookName, typeId);
             }
             else if (bookName != "" && typeId == "" && authorId != "")
             {
-                books = dataService.FetchBooksByBookAndAuthor(bookName, authorId);
+                books = dataService.FetchBooksByNameAndAuthor(bookName, authorId);
             }
             else if (bookName == "" && typeId != "" && authorId != "")
             {
@@ -99,10 +109,12 @@ namespace u20691302_HW05.Controllers
             return View("Books", books);
         }
 
-        //Send queried databases to book view
+
+
+        //Send queried databases to student view
         public ActionResult SearchStudents(string studentName, string Class)
         {
-            List<students> students = new List<students>();
+            List<StudentsVM> students = new List<StudentsVM>();
 
             DataService dataService = new DataService();
 
@@ -125,12 +137,23 @@ namespace u20691302_HW05.Controllers
 
 
         //Create new borrow
-        public ActionResult BorrowBook(string studentId)
+        public ActionResult BorrowBook(int student, int bookId)
         {
-            studentID = studentId;
+            int studentID = student;
             DataService dataService = new DataService();
 
-            //dataService.BorrowBook(bookID, studentID);
+            dataService.BorrowBook(bookId, studentID);
+
+            return RedirectToAction("Books", "Home");
+        }
+
+
+        //Return new borrow
+        public ActionResult ReturnBook(int student, int bookId, DateTime brDate)
+        {
+            DataService dataService = new DataService();
+
+            dataService.ReturnBook(bookId, student, brDate);
 
             return RedirectToAction("Books", "Home");
         }

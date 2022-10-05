@@ -8,33 +8,37 @@
 <hr />
 @using (Html.BeginForm("SearchBooks", "Home"))
 {
-<table class="table">
-    <tr>
-        <td>
-            <input type="text" class="form-control" name="bookName" placeholder="Search Book Name" value="">
-        </td>
-        <td>
-            <select class="form-control" name="authorId">
-                <option value=""; >Select a Author</option>
-                @foreach (var item in Model.Select(a => new { a.author.surname, a.author.authorId }).Distinct())
-                {
-                    <option value="@Html.DisplayFor(a => item.authorId)">@Html.DisplayFor(a => item.surname)</option>
-                }
-            </select>
-        </td>
-        <td>
-            <select class="form-control" name="typeId">
-                <option value="">Select a Type</option>
-                @foreach (var item in Model.Select(a => new { a.type.name, a.type.typeId }).Distinct().OrderBy(a => a.typeId))
-                {
-                    <option value="@Html.DisplayFor(a => item.typeId)">@Html.DisplayFor(a => item.name)</option>
-                }
-            </select>
-        </td>
-        <td><input type="submit" value="Search" class="btn btn-success" /></td>
-        <td>@Html.ActionLink("Clear", "Books", "Home", new { @class = "btn btn-danger" })</td>
-    </tr>
-</table>
+    <table class="table">
+        <tr>
+            <td>
+                <input type="text" class="form-control" name="bookName" placeholder="Search Book Name" value="">
+            </td>
+            <td>
+                <select class="form-control" name="authorId">
+                    <option value=""; >Select a Author</option>
+                    @foreach (var item in Model.Select(a => new { a.author.surname, a.author.authorId }).Distinct())
+                    {
+                        <option value="@Html.DisplayFor(a => item.authorId)">@Html.DisplayFor(a => item.surname)</option>
+                    }
+                </select>
+            </td>
+            <td>
+                <select class="form-control" name="typeId">
+                    <option value="">Select a Type</option>
+                    @foreach (var item in Model.Select(a => new { a.type.name, a.type.typeId }).Distinct().OrderBy(a => a.typeId))
+                    {
+                        <option value="@Html.DisplayFor(a => item.typeId)">@Html.DisplayFor(a => item.name)</option>
+                    }
+                </select>
+            </td>
+            <td>
+                <input type="submit" value="Search" class="btn btn-success" />
+            </td>
+            <td>
+                @Html.ActionLink("Clear", "Books", "Home", new { @class = "btn btn-danger" })
+            </td>
+        </tr>
+    </table>
 }
 
 <table class="table">
@@ -85,10 +89,17 @@
                 @Html.DisplayFor(modelItem => item.book.point)
             </td>
             <td>
-
+                @if (item.getStatus() == "Available")
+                {
+                    <p class="text-success">Available</p>
+                }
+                else
+                {
+                    <p class="text-danger">Out</p>
+                }
             </td>
             <td>
-                @Html.ActionLink("View", "Borrows", "Home", new { bookId = item.book.bookId }, new { @class = "btn btn-primary" })
+                @Html.ActionLink("View", "Borrows", "Home", new { bookId = item.book.bookId, bookName = item.book.name, status = item.getStatus() }, new { @class = "btn btn-primary" })
             </td>
         </tr>
     }
